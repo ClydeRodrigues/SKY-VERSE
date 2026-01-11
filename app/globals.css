@@ -1,0 +1,225 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Skyverse new dark space theme */
+  --background: #0a0e27;
+  --foreground: #ffffff;
+  --card: #1a1f3a;
+  --card-foreground: #ffffff;
+  --popover: #1a1f3a;
+  --popover-foreground: #ffffff;
+  --primary: #6b5bff;
+  --primary-foreground: #ffffff;
+  --secondary: #3fc3ff;
+  --secondary-foreground: #a0aec0;
+  --muted: #a0aec0;
+  --muted-foreground: #1a1f3a;
+  --accent: #6b5bff;
+  --accent-foreground: #ffffff;
+  --destructive: #ff6f6f;
+  --destructive-foreground: #0a0e27;
+  --success: #4ade80;
+  --success-foreground: #0a0e27;
+  --border: #2a2a3e;
+  --input: #25263b;
+  --ring: #3fc3ff;
+  --chart-1: #6b5bff;
+  --chart-2: #3fc3ff;
+  --chart-3: #ffd43b;
+  --chart-4: #ff6f6f;
+  --chart-5: #4ade80;
+  --radius: 0.5rem;
+  --sidebar: #1a1f3a;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #6b5bff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3fc3ff;
+  --sidebar-accent-foreground: #a0aec0;
+  --sidebar-border: #2a2a3e;
+  --sidebar-ring: #3fc3ff;
+  --accent-gradient: linear-gradient(90deg, #6b5bff 0%, #3fc3ff 100%);
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  color: var(--foreground);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+.text-secondary {
+  color: var(--muted);
+}
+
+.bg-panel {
+  background: var(--card);
+}
+
+.accent-gradient {
+  background: var(--accent-gradient);
+  color: #fff;
+}
+
+.alert {
+  background: var(--destructive);
+  color: #fff;
+}
+
+.success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(107,91,255,0.15);
+}
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 16px rgba(63,195,255,0.18);
+}
+
+.card {
+  background: var(--card);
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(10,14,39,0.12);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+  box-shadow: 0 6px 24px rgba(63,195,255,0.10);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.gradient-underline {
+  border-bottom: 3px solid;
+  border-image: var(--accent-gradient) 1;
+}
+
+.modal {
+  background: rgba(10,14,39,0.95);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(63,195,255,0.18);
+}
+
+/* Utility classes for alerts, tooltips, etc. can be added here */
+}
+
+.dark {
+  --background: #0f0f1e;
+  --foreground: #e8e8f0;
+  --card: #1a1a2e;
+  --card-foreground: #e8e8f0;
+  --popover: #1a1a2e;
+  --popover-foreground: #e8e8f0;
+  --primary: #00d9ff;
+  --primary-foreground: #0f0f1e;
+  --secondary: #3a3a4f;
+  --secondary-foreground: #e8e8f0;
+  --muted: #a0a0b0;
+  --muted-foreground: #3a3a4f;
+  --accent: #00d9ff;
+  --accent-foreground: #0f0f1e;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #0f0f1e;
+  --border: #2a2a3e;
+  --input: #25263b;
+  --ring: #00d9ff;
+  --chart-1: #00d9ff;
+  --chart-2: #51cf66;
+  --chart-3: #ffd43b;
+  --chart-4: #ff6b6b;
+  --chart-5: #845ef7;
+  --sidebar: #1a1a2e;
+  --sidebar-foreground: #e8e8f0;
+  --sidebar-primary: #00d9ff;
+  --sidebar-primary-foreground: #0f0f1e;
+  --sidebar-accent: #3a3a4f;
+  --sidebar-accent-foreground: #e8e8f0;
+  --sidebar-border: #2a2a3e;
+  --sidebar-ring: #00d9ff;
+}
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* CHANGE: Add subtle hover and focus states without excessive effects */
+@layer utilities {
+  .card-hover {
+    @apply transition-all duration-200 hover:border-accent/50 hover:bg-card/80;
+  }
+
+  .button-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-lg px-4 py-2 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .button-secondary {
+    @apply bg-secondary text-secondary-foreground font-semibold rounded-lg px-4 py-2 transition-all hover:bg-secondary/80 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .glass-effect {
+    @apply bg-card/40 backdrop-blur-sm border border-border/50;
+  }
+}
