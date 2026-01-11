@@ -100,11 +100,11 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
                 Original Image
               </label>
-              <div className="overflow-hidden rounded-lg border border-[#3a3a4f]">
+              <div className="h-[min(60vh,40rem)] w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-black">
                 <img
                   src={originalImage || "/placeholder.svg"}
                   alt="Original"
-                  className="h-auto w-full object-cover max-h-96"
+                  className="h-full w-full object-contain"
                 />
               </div>
             </div>

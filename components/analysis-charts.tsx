@@ -99,6 +99,7 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
     }
   }))
 
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
       {/* Brightness Distribution */}
@@ -107,20 +108,21 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
         <div className="flex-1 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={brightnessData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
-            <XAxis dataKey="brightness" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1a1a2e",
-                border: "1px solid #3a3a4f",
-                borderRadius: "6px",
-              }}
-              labelStyle={{ color: "#a0a0b0" }}
-            />
-            <Bar dataKey="count" fill="#00d9ff" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+              <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
+              <XAxis dataKey="brightness" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1a1a2e",
+                  border: "1px solid #3a3a4f",
+                  borderRadius: "6px",
+                }}
+                labelStyle={{ color: "#a0a0b0" }}
+              />
+              <Bar dataKey="count" fill="#00d9ff" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Cluster Size Comparison */}
@@ -129,20 +131,21 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
         <div className="flex-1 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clusterData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
-            <XAxis dataKey="cluster" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1a1a2e",
-                border: "1px solid #3a3a4f",
-                borderRadius: "6px",
-              }}
-              labelStyle={{ color: "#a0a0b0" }}
-            />
-            <Bar dataKey="size" fill="#51cf66" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+              <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
+              <XAxis dataKey="cluster" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1a1a2e",
+                  border: "1px solid #3a3a4f",
+                  borderRadius: "6px",
+                }}
+                labelStyle={{ color: "#a0a0b0" }}
+              />
+              <Bar dataKey="size" fill="#51cf66" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Anomaly Score Scatter */}
@@ -151,20 +154,21 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
         <div className="flex-1 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
-            <XAxis type="number" dataKey="ra" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <YAxis type="number" dataKey="anomalyScore" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1a1a2e",
-                border: "1px solid #3a3a4f",
-                borderRadius: "6px",
-              }}
-              labelStyle={{ color: "#a0a0b0" }}
-            />
-            <Scatter dataKey="anomalyScore" data={anomalyData} fill="#ff6b6b" />
-          </ScatterChart>
-        </ResponsiveContainer>
+              <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
+              <XAxis type="number" dataKey="ra" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <YAxis type="number" dataKey="anomalyScore" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1a1a2e",
+                  border: "1px solid #3a3a4f",
+                  borderRadius: "6px",
+                }}
+                labelStyle={{ color: "#a0a0b0" }}
+              />
+              <Scatter dataKey="anomalyScore" data={anomalyData} fill="#ff6b6b" />
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Discovery Score Gauge */}

@@ -148,22 +148,22 @@ function DetailedReportContent() {
             <div className="xl:col-span-2 space-y-8">
               {/* Original Image */}
               {observation.originalImageBase64 && (
-                <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden">
+                <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{ minHeight: '480px' }}>
                   <div className="p-4 border-b border-[#3a3a4f]">
                     <p className="text-sm font-semibold text-[#e8e8f0]">Original Image</p>
                   </div>
-                  <div className="p-4 bg-[#0f0f1e] flex items-center justify-center max-h-96">
+                  <div className="p-4 bg-[#0f0f1e] flex items-center justify-center h-[calc(100%-57px)]">
                     <img
                       src={observation.originalImageBase64 || "/placeholder.svg"}
                       alt="Original observation"
-                      className="max-w-full max-h-full rounded"
+                      className="max-w-full max-h-full rounded object-contain"
                     />
                   </div>
                 </div>
               )}
 
               {/* Star Field Visualization */}
-              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{minHeight:'480px'}}>
+              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{ minHeight: '480px' }}>
                 <div className="p-4 border-b border-[#3a3a4f]">
                   <p className="text-sm font-semibold text-[#e8e8f0]">Star Field with Constellation Map</p>
                 </div>
@@ -173,7 +173,7 @@ function DetailedReportContent() {
               </div>
 
               {/* Charts */}
-              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{minHeight:'480px'}}>
+              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{ minHeight: '480px' }}>
                 <div className="p-4 border-b border-[#3a3a4f]">
                   <p className="text-sm font-semibold text-[#e8e8f0]">Analysis Metrics</p>
                 </div>
@@ -183,7 +183,7 @@ function DetailedReportContent() {
               </div>
 
               {/* Analysis Summary */}
-              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{minHeight:'480px'}}>
+              <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] overflow-hidden" style={{ minHeight: '480px' }}>
                 <div className="p-4 border-b border-[#3a3a4f]">
                   <p className="text-sm font-semibold text-[#e8e8f0]">Observation Summary</p>
                 </div>
