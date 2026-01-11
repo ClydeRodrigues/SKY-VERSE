@@ -100,12 +100,13 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
   }))
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
       {/* Brightness Distribution */}
-      <div ref={brightnessRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6">
+      <div ref={brightnessRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Brightness Distribution</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={brightnessData}>
+        <div className="flex-1 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={brightnessData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
             <XAxis dataKey="brightness" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
             <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
@@ -123,10 +124,11 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       </div>
 
       {/* Cluster Size Comparison */}
-      <div ref={clusterRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6">
+      <div ref={clusterRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Cluster Size Comparison</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={clusterData}>
+        <div className="flex-1 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={clusterData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
             <XAxis dataKey="cluster" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
             <YAxis stroke="#a0a0b0" style={{ fontSize: "12px" }} />
@@ -144,10 +146,11 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       </div>
 
       {/* Anomaly Score Scatter */}
-      <div ref={anomalyRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6">
+      <div ref={anomalyRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Anomaly Score Analysis</h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <div className="flex-1 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
             <XAxis type="number" dataKey="ra" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
             <YAxis type="number" dataKey="anomalyScore" stroke="#a0a0b0" style={{ fontSize: "12px" }} />
@@ -165,10 +168,10 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       </div>
 
       {/* Discovery Score Gauge */}
-      <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6">
+      <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex items-center justify-center">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Discovery Score</h3>
-        <div className="flex items-center justify-center">
-          <div className="relative w-48 h-48">
+        <div className="flex items-center justify-center w-full h-full">
+          <div className="relative w-40 h-40 lg:w-56 lg:h-56">
             <svg viewBox="0 0 120 120" className="w-full h-full">
               {/* Background arc */}
               <circle cx="60" cy="60" r="50" fill="none" stroke="#3a3a4f" strokeWidth="8" />

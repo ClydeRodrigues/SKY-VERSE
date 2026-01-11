@@ -94,7 +94,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
         </div>
 
         {/* Image Comparison */}
-        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 items-start">
           {originalImage && (
             <div>
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
@@ -110,7 +110,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
             </div>
           )}
 
-          <div>
+          <div className="h-[min(60vh,40rem)] w-full">
             <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
               Star Field Visualization
             </label>
@@ -154,7 +154,12 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
         {analysis.stars && (
           <div className="mb-8">
             <h2 className="mb-6 text-lg font-semibold text-[#e8e8f0]">Detailed Analysis</h2>
-            <AnalysisCharts analysis={analysis} />
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-stretch">
+              <div className="h-[min(60vh,40rem)] w-full">
+                <AnalysisCharts analysis={analysis} />
+              </div>
+              <div className="hidden lg:block" />
+            </div>
           </div>
         )}
 
