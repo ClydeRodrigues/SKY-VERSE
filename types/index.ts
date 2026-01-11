@@ -18,6 +18,7 @@ export interface AnalysisResult {
   timestamp?: string
   stars?: Star[]
   constellations?: Constellation[]
+  starLabels?: string[]  
 }
 
 export interface SavedObservation {
