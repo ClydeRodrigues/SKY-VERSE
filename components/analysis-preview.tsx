@@ -74,8 +74,8 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f1e] px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#0f0f1e] px-8 py-8">
+      <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -100,7 +100,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
                 Original Image
               </label>
-              <div className="h-[min(60vh,40rem)] w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-black">
+              <div className="h-[min(70vh,50rem)] w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-black">
                 <img
                   src={originalImage || "/placeholder.svg"}
                   alt="Original"
@@ -110,7 +110,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
             </div>
           )}
 
-          <div className="h-[min(60vh,40rem)] w-full">
+          <div className="h-[min(70vh,50rem)] w-full">
             <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
               Star Field Visualization
             </label>
@@ -155,7 +155,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
           <div className="mb-8">
             <h2 className="mb-6 text-lg font-semibold text-[#e8e8f0]">Detailed Analysis</h2>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-stretch">
-              <div className="h-[min(60vh,40rem)] w-full">
+              <div className="h-[min(70vh,50rem)] w-full">
                 <AnalysisCharts analysis={analysis} />
               </div>
               <div className="hidden lg:block" />
