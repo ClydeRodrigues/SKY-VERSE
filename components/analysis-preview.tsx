@@ -23,6 +23,15 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
   const handleDownloadPDF = async () => {
     setIsDownloadingPDF(true)
     try {
+      // Ensure the PDF link can point to a real, saved detailed report.
+      const observationId = `OBS-${Date.now()}`
+      saveObservation({
+        id: observationId,
+        timestamp: analysis.timestamp || new Date().toISOString(),
+        originalImageBase64: originalImage || undefined,
+        analysis,
+      })
+
       const response = await fetch("/api/generate-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -30,6 +39,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
           analysis,
           originalImage,
           timestamp: new Date().toISOString(),
+          observationId,
         }),
       })
 
@@ -39,7 +49,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      link.download = `skyverse-report-${Date.now()}.pdf`
+      link.download = `skyverse-observation-${observationId}.pdf`
       link.click()
       window.URL.revokeObjectURL(url)
     } catch (error) {
@@ -154,12 +164,7 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
         {analysis.stars && (
           <div className="mb-8">
             <h2 className="mb-6 text-lg font-semibold text-[#e8e8f0]">Detailed Analysis</h2>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 items-stretch">
-              <div className="h-[min(70vh,50rem)] w-full">
-                <AnalysisCharts analysis={analysis} />
-              </div>
-              <div className="hidden lg:block" />
-            </div>
+            <AnalysisCharts analysis={analysis} />
           </div>
         )}
 

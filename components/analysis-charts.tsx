@@ -11,8 +11,12 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts"
-import { useRef, useImperativeHandle, forwardRef } from "react"
+import { useRef, useImperativeHandle, forwardRef, type ForwardedRef } from "react"
 import type { Star, AnalysisResult } from "@/types"
+
+export interface AnalysisChartsHandle {
+  exportCharts: () => { title: string; image: string }[]
+}
 
 interface AnalysisChartsProps {
   analysis?: AnalysisResult
@@ -32,7 +36,7 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
   discoveryScore: propsDiscoveryScore,
   exportMode = false,
   onExportImages,
-}: AnalysisChartsProps, ref) {
+}: AnalysisChartsProps, ref: ForwardedRef<AnalysisChartsHandle>) {
   const stars = propsStars || analysis?.stars || []
   const clusterCount = propsClusterCount ?? analysis?.clusterCount ?? 0
   const anomalyCount = propsAnomalyCount ?? analysis?.anomalyCount ?? 0
@@ -99,13 +103,12 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
     }
   }))
 
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
       {/* Brightness Distribution */}
       <div ref={brightnessRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Brightness Distribution</h3>
-        <div className="flex-1 w-full">
+        <div className="w-full flex-1 min-h-[220px] md:min-h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={brightnessData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
@@ -128,7 +131,7 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       {/* Cluster Size Comparison */}
       <div ref={clusterRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Cluster Size Comparison</h3>
-        <div className="flex-1 w-full">
+        <div className="w-full flex-1 min-h-[220px] md:min-h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={clusterData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
@@ -151,7 +154,7 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       {/* Anomaly Score Scatter */}
       <div ref={anomalyRef} className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Anomaly Score Analysis</h3>
-        <div className="flex-1 w-full">
+        <div className="w-full flex-1 min-h-[220px] md:min-h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#3a3a4f" />
@@ -172,10 +175,10 @@ const AnalysisCharts = forwardRef(function AnalysisCharts({
       </div>
 
       {/* Discovery Score Gauge */}
-      <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex items-center justify-center">
+      <div className="rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] p-6 h-full flex flex-col">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#a0a0b0]">Discovery Score</h3>
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="relative w-40 h-40 lg:w-56 lg:h-56">
+        <div className="flex flex-1 items-center justify-center w-full min-h-[220px] md:min-h-[260px]">
+          <div className="relative w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56">
             <svg viewBox="0 0 120 120" className="w-full h-full">
               {/* Background arc */}
               <circle cx="60" cy="60" r="50" fill="none" stroke="#3a3a4f" strokeWidth="8" />

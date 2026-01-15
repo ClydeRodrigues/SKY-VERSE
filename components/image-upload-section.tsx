@@ -22,7 +22,70 @@ export default function ImageUploadSection({
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleFile = (file: File) => {
+  const isLikelyNightSkyImage = async (file: File): Promise<boolean> => {
+    // Lightweight client-side check to block obvious non-night-sky images.
+    // Heuristic: mostly dark background + some small bright points (stars).
+    const bitmap = await createImageBitmap(file)
+
+    const targetW = 256
+    const scale = Math.min(1, targetW / bitmap.width)
+    const w = Math.max(1, Math.floor(bitmap.width * scale))
+    const h = Math.max(1, Math.floor(bitmap.height * scale))
+
+    const canvas = document.createElement("canvas")
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })
+    if (!ctx) return false
+
+    ctx.drawImage(bitmap, 0, 0, w, h)
+    const { data } = ctx.getImageData(0, 0, w, h)
+
+    const n = w * h
+    let dark = 0
+    let bright = 0
+    let veryBright = 0
+    let sum = 0
+    let sumSq = 0
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i]!
+      const g = data[i + 1]!
+      const b = data[i + 2]!
+      // perceived luminance (0..255)
+      const y = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      sum += y
+      sumSq += y * y
+
+      if (y < 40) dark++
+      if (y > 180) bright++
+      if (y > 230) veryBright++
+    }
+
+    const mean = sum / n
+    const variance = Math.max(0, sumSq / n - mean * mean)
+    const std = Math.sqrt(variance)
+
+    const darkFrac = dark / n
+    const brightFrac = bright / n
+    const veryBrightFrac = veryBright / n
+
+    // Night sky tends to be:
+    // - predominantly dark
+    // - with sparse bright pixels (stars), not large bright regions
+    // - decent contrast (std)
+    const looksNightSky =
+      darkFrac >= 0.55 &&
+      brightFrac >= 0.001 &&
+      brightFrac <= 0.12 &&
+      veryBrightFrac <= 0.02 &&
+      mean <= 110 &&
+      std >= 25
+
+    return looksNightSky
+  }
+
+  const handleFile = async (file: File) => {
     setError(null)
 
     if (!file.type.startsWith("image/")) {
@@ -32,6 +95,17 @@ export default function ImageUploadSection({
 
     if (file.size > 10 * 1024 * 1024) {
       setError("File size must be less than 10MB")
+      return
+    }
+
+    try {
+      const ok = await isLikelyNightSkyImage(file)
+      if (!ok) {
+        setError("Only star/constellation night-sky images are allowed. Please upload a clear night-sky photo.")
+        return
+      }
+    } catch {
+      setError("Couldn't validate this image. Please try a different night-sky image.")
       return
     }
 
@@ -60,14 +134,14 @@ export default function ImageUploadSection({
 
     const file = e.dataTransfer.files?.[0]
     if (file) {
-      handleFile(file)
+      void handleFile(file)
     }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      handleFile(file)
+      void handleFile(file)
     }
   }
 

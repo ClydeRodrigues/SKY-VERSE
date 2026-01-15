@@ -1,122 +1,120 @@
-import { NextRequest, NextResponse } from "next/server";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import jsPDF from "jspdf"
 
-// Helper to convert base64 image to data URL
-function base64ToDataUrl(base64: string, mime: string = "image/png") {
-  return `data:${mime};base64,${base64}`;
+type ChartImage = { title?: string; image?: string }
+
+export type PdfReportInput = {
+  analysis: any
+  originalImage?: string
+  charts?: ChartImage[]
+  timestamp: string
+  observationId: string
+  baseUrl: string
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { analysis, originalImage, charts, timestamp, observationId } = body;
+function normalizeImageDataUrl(value: string, mime: string = "image/png"): string {
+  // Accept either a full data URL or raw base64.
+  if (value.startsWith("data:")) return value
+  return `data:${mime};base64,${value}`
+}
 
-    const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-    let y = 40;
+export function generatePdfReport(input: PdfReportInput): ArrayBuffer {
+  const { analysis, originalImage, charts, timestamp, observationId, baseUrl } = input
 
-    // Title
-    doc.setFontSize(24);
-    doc.setFont("helvetica", "bold");
-    doc.text("SKYVERSE Observation Report", 40, y);
-    y += 32;
+  const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" })
+  let y = 40
 
-    // Metadata
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Observation ID: ${observationId || "-"}`, 40, y);
-    y += 14;
-    doc.text(`Generated: ${new Date(timestamp).toLocaleString()}`, 40, y);
-    y += 20;
+  // Title
+  doc.setFontSize(24)
+  doc.setFont("helvetica", "bold")
+  doc.text("SKYVERSE Observation Report", 40, y)
+  y += 32
 
-    // Uploaded Image
-    if (originalImage) {
-      doc.setFontSize(12);
-      doc.text("Uploaded Image:", 40, y);
-      y += 8;
-      doc.addImage(base64ToDataUrl(originalImage), "PNG", 40, y, 180, 120);
-      y += 130;
-    }
+  // Metadata
+  doc.setFontSize(10)
+  doc.setFont("helvetica", "normal")
+  doc.text(`Observation ID: ${observationId}`, 40, y)
+  y += 14
+  doc.text(`Generated: ${new Date(timestamp).toLocaleString()}`, 40, y)
+  y += 20
 
-    // Star Analysis Summary
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("Star Analysis Summary", 40, y);
-    y += 18;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(analysis.summary || "No summary available.", 40, y, { maxWidth: 500 });
-    y += 30;
+  // Uploaded Image
+  if (originalImage) {
+    doc.setFontSize(12)
+    doc.text("Uploaded Image:", 40, y)
+    y += 8
+    doc.addImage(normalizeImageDataUrl(originalImage), "PNG", 40, y, 180, 120)
+    y += 130
+  }
 
-    // Charts
-    if (charts && Array.isArray(charts)) {
-      for (const chart of charts) {
-        if (chart.title) {
-          doc.setFontSize(12);
-          doc.setFont("helvetica", "bold");
-          doc.text(chart.title, 40, y);
-          y += 8;
-        }
-        if (chart.image) {
-          doc.addImage(base64ToDataUrl(chart.image), "PNG", 40, y, 220, 120);
-          y += 130;
+  // Star Analysis Summary
+  doc.setFontSize(14)
+  doc.setFont("helvetica", "bold")
+  doc.text("Star Analysis Summary", 40, y)
+  y += 18
+  doc.setFontSize(10)
+  doc.setFont("helvetica", "normal")
+  doc.text(analysis.summary || "No summary available.", 40, y, { maxWidth: 500 })
+  y += 30
+
+  // Charts (best-effort; only supports raster data URLs reliably)
+  if (charts && Array.isArray(charts)) {
+    for (const chart of charts) {
+      if (chart.title) {
+        doc.setFontSize(12)
+        doc.setFont("helvetica", "bold")
+        doc.text(chart.title, 40, y)
+        y += 8
+      }
+      if (chart.image) {
+        // If caller passes SVG data URL, jsPDF may not render it; still keep the link section below.
+        try {
+          doc.addImage(normalizeImageDataUrl(chart.image), "PNG", 40, y, 220, 120)
+          y += 130
+        } catch {
+          // skip image if unsupported
         }
       }
     }
-
-    // Constellations
-    if (analysis.constellations && analysis.constellations.length > 0) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      doc.text("Detected Constellations:", 40, y);
-      y += 14;
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text(analysis.constellations.map((c: any) => c.name).join(", "), 40, y, { maxWidth: 500 });
-      y += 20;
-    }
-
-    // Interactive Analysis & Visualizations section
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("Interactive Analysis & Visualizations", 40, y);
-    y += 18;
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text("Click the link below to access the full interactive star field map with constellation overlays,", 40, y, { maxWidth: 500 });
-    y += 14;
-    doc.text("brightness heatmaps, and all analysis charts.", 40, y, { maxWidth: 500 });
-    y += 18;
-    // Hyperlink to detailed analysis (opens in new tab)
-    doc.setTextColor(63, 195, 255);
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://skyverse.app";
-    const detailUrl = `${baseUrl}/report/${observationId}`;
-    doc.textWithLink(
-      ">> Open Detailed Analysis",
-      40,
-      y,
-      { url: detailUrl }
-    );
-    doc.setTextColor(0, 0, 0);
-    y += 24;
-
-    // Footer
-    doc.setFontSize(9);
-    doc.text(
-      "Report generated by SKYVERSE - Professional Celestial Analysis Platform",
-      40,
-      820
-    );
-
-    const pdfBuffer = doc.output("arraybuffer");
-    return new NextResponse(pdfBuffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename=skyverse-observation-${observationId || Date.now()}.pdf`,
-      },
-    });
-  } catch (error) {
-    console.error("PDF generation error:", error);
-    return NextResponse.json({ error: "PDF generation failed" }, { status: 500 });
   }
+
+  // Constellations
+  if (analysis.constellations && analysis.constellations.length > 0) {
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "bold")
+    doc.text("Detected Constellations:", 40, y)
+    y += 14
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "normal")
+    doc.text(analysis.constellations.map((c: any) => c.name).join(", "), 40, y, { maxWidth: 500 })
+    y += 20
+  }
+
+  // Interactive Analysis & Visualizations section + hyperlink to the detailed report
+  doc.setFontSize(14)
+  doc.setFont("helvetica", "bold")
+  doc.text("Interactive Analysis & Visualizations", 40, y)
+  y += 18
+  doc.setFontSize(10)
+  doc.setFont("helvetica", "normal")
+  doc.text(
+    "Click the link below to access the full interactive star field map with constellation overlays,",
+    40,
+    y,
+    { maxWidth: 500 },
+  )
+  y += 14
+  doc.text("brightness heatmaps, and all analysis charts.", 40, y, { maxWidth: 500 })
+  y += 18
+
+  const detailUrl = `${baseUrl.replace(/\/$/, "")}/report/${observationId}`
+  doc.setTextColor(63, 195, 255)
+  doc.textWithLink(">> Open Detailed Analysis", 40, y, { url: detailUrl })
+  doc.setTextColor(0, 0, 0)
+  y += 24
+
+  // Footer
+  doc.setFontSize(9)
+  doc.text("Report generated by SKYVERSE - Professional Celestial Analysis Platform", 40, 820)
+
+  return doc.output("arraybuffer")
 }

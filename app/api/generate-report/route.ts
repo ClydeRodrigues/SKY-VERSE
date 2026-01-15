@@ -1,298 +1,34 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { generatePdfReport } from "./pdf"
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { analysis, originalImage, timestamp, observationId } = body
+    const { analysis, originalImage, timestamp, observationId, charts } = body
 
-    const pdfBuffer = generateEnhancedPDF({
+    const resolvedObservationId = observationId || `OBS-${Date.now()}`
+    const origin =
+      request.headers.get("origin") ||
+      (process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "") : null) ||
+      "https://skyverse.app"
+
+    const pdfBuffer = generatePdfReport({
       analysis,
       originalImage,
+      charts,
       timestamp,
-      observationId: observationId || `OBS-${Date.now()}`,
+      observationId: resolvedObservationId,
+      baseUrl: origin,
     })
 
     return new NextResponse(pdfBuffer, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="skyverse-observation-${observationId || Date.now()}.pdf"`,
+        "Content-Disposition": `attachment; filename="skyverse-observation-${resolvedObservationId}.pdf"`,
       },
     })
   } catch (error) {
     console.error("Report generation error:", error)
     return NextResponse.json({ error: "Report generation failed" }, { status: 500 })
   }
-}
-
-interface PDFConfig {
-  analysis: any
-  originalImage?: string
-  timestamp: string
-  observationId: string
-}
-
-function generateEnhancedPDF(config: PDFConfig): ArrayBuffer {
-  const { analysis, originalImage, timestamp, observationId } = config
-
-  const date = new Date(timestamp).toLocaleString()
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://skyverse.app"
-  const reportUrl = `${baseUrl}/report/${observationId}`
-
-  const contentLines: string[] = []
-  let currentY = 750
-
-  // Title
-  contentLines.push("BT")
-  contentLines.push("/F2 32 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push("(SKYVERSE Observation Report) Tj")
-  contentLines.push("ET")
-  currentY -= 50
-
-  // Section: View Detailed Analysis
-  contentLines.push("BT")
-  contentLines.push("/F2 14 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push("(Interactive Analysis & Visualizations) Tj")
-  contentLines.push("ET")
-  currentY -= 25
-
-  // Description text with proper line wrapping
-  const linkDescription =
-    "Click the button below to access the full interactive star field map with constellation overlays,"
-  const linkDescription2 = "brightness heatmaps, and all analysis charts."
-
-  contentLines.push("BT")
-  contentLines.push("/F1 10 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push(`(${escapeText(linkDescription)}) Tj`)
-  contentLines.push("ET")
-  currentY -= 15
-
-  contentLines.push("BT")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push(`(${escapeText(linkDescription2)}) Tj`)
-  contentLines.push("ET")
-  currentY -= 30
-
-  const linkStartX = 50
-  const linkStartY = currentY + 5
-  const linkEndX = 300
-  const linkEndY = currentY + 18
-
-  // Interactive Link - "View Detailed Analysis"
-  contentLines.push("BT")
-  contentLines.push("/F1 12 Tf")
-  contentLines.push("0 0 0.8 RG") // Blue color for link
-  contentLines.push(`${linkStartX} ${linkStartY} Td`)
-  contentLines.push("(>> Open Detailed Analysis) Tj")
-  contentLines.push("ET")
-  currentY -= 30
-
-  // Reset color to black
-  contentLines.push("BT")
-  contentLines.push("0 0 0 RG")
-  contentLines.push("ET")
-
-  // Metadata Section
-  contentLines.push("BT")
-  contentLines.push("/F1 10 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push(`(Observation ID: ${escapeText(observationId)}) Tj`)
-  contentLines.push("ET")
-  currentY -= 15
-
-  contentLines.push("BT")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push(`(Generated: ${date}) Tj`)
-  contentLines.push("ET")
-  currentY -= 35
-
-  // Key Metrics - Full Analysis
-  contentLines.push("BT")
-  contentLines.push("/F2 16 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push("(Key Metrics & Analysis) Tj")
-  contentLines.push("ET")
-  currentY -= 25
-
-  const metrics = [
-    `Total Stars Detected: ${analysis.starCount || 0}`,
-    `Stellar Clusters Identified: ${analysis.clusterCount || 0}`,
-    `Anomalies Detected: ${analysis.anomalyCount || 0}`,
-    `Scientific Discovery Score: ${analysis.discoveryScore || 0}%`,
-  ]
-
-  metrics.forEach((metric) => {
-    contentLines.push("BT")
-    contentLines.push("/F1 11 Tf")
-    contentLines.push(`50 ${currentY} Td`)
-    contentLines.push(`(${escapeText(metric)}) Tj`)
-    contentLines.push("ET")
-    currentY -= 18
-  })
-
-  currentY -= 15
-
-  // Observation Summary Section
-  contentLines.push("BT")
-  contentLines.push("/F2 14 Tf")
-  contentLines.push(`50 ${currentY} Td`)
-  contentLines.push("(Observation Summary) Tj")
-  contentLines.push("ET")
-  currentY -= 20
-
-  const summary = analysis.summary || "Comprehensive stellar analysis completed with detailed constellation mapping."
-  const summaryLines = wrapText(summary, 95)
-
-  summaryLines.forEach((line) => {
-    contentLines.push("BT")
-    contentLines.push("/F1 10 Tf")
-    contentLines.push(`50 ${currentY} Td`)
-    contentLines.push(`(${escapeText(line)}) Tj`)
-    contentLines.push("ET")
-    currentY -= 15
-  })
-
-  currentY -= 15
-
-  // Constellation Detection Section
-  if (analysis.constellations && analysis.constellations.length > 0) {
-    contentLines.push("BT")
-    contentLines.push("/F2 14 Tf")
-    contentLines.push(`50 ${currentY} Td`)
-    contentLines.push("(Detected Constellations) Tj")
-    contentLines.push("ET")
-    currentY -= 20
-
-    const constellationList = analysis.constellations.map((c: any) => c.name).join(", ")
-    const constellationLines = wrapText(constellationList, 95)
-
-    constellationLines.forEach((line) => {
-      contentLines.push("BT")
-      contentLines.push("/F1 10 Tf")
-      contentLines.push(`50 ${currentY} Td`)
-      contentLines.push(`(${escapeText(line)}) Tj`)
-      contentLines.push("ET")
-      currentY -= 15
-    })
-
-    currentY -= 15
-  }
-
-  // Visualizations Note
-  contentLines.push("BT")
-  contentLines.push("/F2 14 Tf")
-  contentLines.push(`50 ${Math.max(currentY, 250)} Td`)
-  contentLines.push("(Complete Visualizations Available) Tj")
-  contentLines.push("ET")
-
-  contentLines.push("BT")
-  contentLines.push("/F1 10 Tf")
-  contentLines.push(`50 ${Math.max(currentY, 250) - 20} Td`)
-  contentLines.push("(This PDF includes summary data. Visit the link above for:) Tj")
-  contentLines.push("ET")
-
-  const visualizationsList = [
-    "Interactive star field mapping with constellation overlays",
-    "Brightness distribution and intensity heatmaps",
-    "Cluster analysis and anomaly detection charts",
-    "Full scientific discovery metrics and analysis",
-  ]
-
-  let vizY = Math.max(currentY, 250) - 40
-  visualizationsList.forEach((viz) => {
-    contentLines.push("BT")
-    contentLines.push("/F1 10 Tf")
-    contentLines.push(`50 ${vizY} Td`)
-    contentLines.push(`(- ${escapeText(viz)}) Tj`)
-    contentLines.push("ET")
-    vizY -= 15
-  })
-
-  // Footer
-  contentLines.push("BT")
-  contentLines.push("/F1 9 Tf")
-  contentLines.push("50 50 Td")
-  contentLines.push("(Report generated by SKYVERSE - Professional Celestial Analysis Platform) Tj")
-  contentLines.push("ET")
-
-  contentLines.push("BT")
-  contentLines.push("50 35 Td")
-  contentLines.push(`(Archive: ${escapeText(reportUrl)}) Tj`)
-  contentLines.push("ET")
-
-  const contentStream = contentLines.join("\n")
-  const contentLength = new TextEncoder().encode(contentStream).length
-
-  const pdfLines = [
-    "%PDF-1.4",
-    "1 0 obj",
-    "<< /Type /Catalog /Pages 2 0 R >>",
-    "endobj",
-    "2 0 obj",
-    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-    "endobj",
-    "3 0 obj",
-    `<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Annots [6 0 R] >>`,
-    "endobj",
-    "4 0 obj",
-    "<< /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> >> >>",
-    "endobj",
-    "5 0 obj",
-    `<< /Length ${contentLength} >>`,
-    "stream",
-    contentStream,
-    "endstream",
-    "endobj",
-    "6 0 obj",
-    `<< /Type /Annot /Subtype /Link /Rect [${linkStartX} ${linkStartY} ${linkEndX} ${linkEndY}] /Border [0 0 0] /A << /S /URI /URI (${reportUrl}) >> >>`,
-    "endobj",
-    "xref",
-    "0 7",
-    "0000000000 65535 f ",
-    "0000000009 00000 n ",
-    "0000000058 00000 n ",
-    "0000000115 00000 n ",
-    "0000000260 00000 n ",
-    "0000000380 00000 n ",
-    `${String(contentLength + 450).padEnd(10)} 00000 n `,
-    "trailer",
-    "<< /Size 7 /Root 1 0 R >>",
-    "startxref",
-    `${contentLength + 550}`,
-    "%%EOF",
-  ]
-
-  const pdfText = pdfLines.join("\n")
-  const encoder = new TextEncoder()
-  return encoder.encode(pdfText).buffer
-}
-
-function wrapText(text: string, maxWidth: number): string[] {
-  const words = text.split(" ")
-  const lines: string[] = []
-  let currentLine = ""
-
-  words.forEach((word) => {
-    if ((currentLine + " " + word).length > maxWidth) {
-      if (currentLine) lines.push(currentLine)
-      currentLine = word
-    } else {
-      currentLine = currentLine ? currentLine + " " + word : word
-    }
-  })
-
-  if (currentLine) lines.push(currentLine)
-  return lines
-}
-
-function escapeText(text: string): string {
-  return text
-    .replace(/\\/g, "\\\\")
-    .replace(/\(/g, "\\(")
-    .replace(/\)/g, "\\)")
-    .replace(/\r/g, "\\r")
-    .replace(/\n/g, "\\n")
 }
