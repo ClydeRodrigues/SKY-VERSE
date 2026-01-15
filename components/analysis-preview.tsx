@@ -104,29 +104,37 @@ export default function AnalysisPreview({ analysis, originalImage, onNewAnalysis
         </div>
 
         {/* Image Comparison */}
-        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 items-start">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 items-start">
           {originalImage && (
-            <div>
+            <div className="w-full">
               <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
                 Original Image
               </label>
-              <div className="h-[min(70vh,50rem)] w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-black">
+              <div className="relative w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-black aspect-[4/3]">
                 <img
                   src={originalImage || "/placeholder.svg"}
                   alt="Original"
-                  className="h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
               </div>
             </div>
           )}
 
-          <div className="h-[min(70vh,50rem)] w-full">
+          <div className="w-full">
             <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-[#a0a0b0]">
               Star Field Visualization
             </label>
-            {analysis.stars && analysis.constellations && (
-              <StarFieldCanvas analysis={analysis} showHeatmap={false} showConstellations={true} />
-            )}
+            <div className="relative w-full overflow-hidden rounded-lg border border-[#3a3a4f] bg-[#1a1a2e] aspect-[4/3] flex items-center justify-center">
+              {analysis.stars && analysis.constellations && (
+                <StarFieldCanvas
+                  analysis={analysis}
+                  showHeatmap={false}
+                  showConstellations={true}
+                  width={800}
+                  height={600}
+                />
+              )}
+            </div>
           </div>
         </div>
 
