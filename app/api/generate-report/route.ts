@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       baseUrl: origin,
     })
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="skyverse-observation-${resolvedObservationId}.pdf"`,

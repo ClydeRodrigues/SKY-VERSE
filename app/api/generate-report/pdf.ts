@@ -9,7 +9,7 @@ export type PdfReportInput = {
   baseUrl: string
 }
 
-export function generatePdfReport(input: PdfReportInput): ArrayBuffer {
+export function generatePdfReport(input: PdfReportInput): Uint8Array {
   const { analysis, timestamp, observationId, baseUrl } = input
 
   const date = new Date(timestamp).toLocaleString()
@@ -146,7 +146,7 @@ export function generatePdfReport(input: PdfReportInput): ArrayBuffer {
   contentLines.push("ET")
 
   const contentStream = contentLines.join("\n")
-  const contentLength = new TextEncoder().encode(contentStream).length
+  const contentLength = Buffer.byteLength(contentStream, "utf-8")
 
   const pdfLines = [
     "%PDF-1.4",
@@ -190,8 +190,7 @@ export function generatePdfReport(input: PdfReportInput): ArrayBuffer {
   ]
 
   const pdfText = pdfLines.join("\n")
-  const encoder = new TextEncoder()
-  return encoder.encode(pdfText).buffer
+  return Buffer.from(pdfText, "utf-8")
 }
 
 function wrapText(text: string, maxWidth: number): string[] {
